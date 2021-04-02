@@ -1,0 +1,52 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Player : MonoBehaviour
+{
+    public float speed;//速度变量
+    private Rigidbody2D rigdbody;//获取刚体
+    private Animator animator;
+
+
+    private float inputX, inputY;//位置变量
+
+    private float stopX, stopY;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        rigdbody = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
+        stopX = 1;
+        //获取Player上的相应组件
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        Run();
+
+    }
+    void Run()//跑步
+    {
+        inputX = Input.GetAxisRaw("Horizontal");//获得玩家输入
+        inputY = Input.GetAxisRaw("Vertical");//获得玩家输入
+
+        Vector2 input = new Vector2(inputX, inputY).normalized;//接受输入
+        rigdbody.velocity = input * speed;//变量乘以速度，赋值给刚体
+
+        if (input != Vector2.zero)
+        {
+
+            stopX = inputX;
+            stopY = inputY;
+        }
+        else
+        {
+
+        }
+        animator.SetFloat("InputX", stopX);
+        animator.SetFloat("InputY", stopY);
+    }
+} 

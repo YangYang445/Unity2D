@@ -1,0 +1,48 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Player : MonoBehaviour
+{
+    public float speed;
+    private Rigidbody2D rigdbody;
+    private Animator animator;
+
+    private float inputX, inputY;
+    private float stopX, stopY;
+    // Start is called before the first frame update
+    void Start()
+    {
+        rigdbody = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
+        stopX = 1;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        Run();
+    }
+    void Run()
+    {
+        inputX = Input.GetAxisRaw("Horizontal");
+        inputY = Input.GetAxisRaw("Vertical");
+
+        Vector2 input = new Vector2(inputX, inputY).normalized;
+        rigdbody.velocity = input * speed;
+
+        if(input != Vector2.zero)
+        {
+            animator.SetBool("isMoving", true);
+            stopX = inputX;
+            stopY = inputY;
+        }
+        else
+        {
+            animator.SetBool("isMoving", false );
+        }
+        
+        animator.SetFloat("InputX", stopX);
+        animator.SetFloat("InputY", stopY);
+    }
+}

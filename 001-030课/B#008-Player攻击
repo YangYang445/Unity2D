@@ -1,0 +1,94 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Player : MonoBehaviour
+{
+    //攻击开始，攻击结束，角色移动速度
+    public float AttackStar;
+    public float AttackEnd;
+    public float speed;
+
+    //组件
+    private Rigidbody2D rigdbody;
+    private Animator animator;
+    public  PolygonCollider2D pol2DRight;
+    public PolygonCollider2D pol2DLeft;
+
+    //控制动画变量消息
+    private float inputX, inputY;
+    private float stopX, stopY;
+
+    //攻击是否进行判断
+    private bool PlayerAttack;
+    // Start is called before the first frame update
+    void Start()
+    {
+        rigdbody = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
+        pol2DRight = pol2DRight.GetComponent<PolygonCollider2D>();
+        pol2DLeft = pol2DLeft.GetComponent<PolygonCollider2D>();
+        stopX = 1;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        Run();
+        Attack();
+    }
+    void Run()
+    {
+        //移动
+        inputX = Input.GetAxisRaw("Horizontal");
+        inputY = Input.GetAxisRaw("Vertical");
+
+        Vector2 input = new Vector2(inputX, inputY).normalized;
+        rigdbody.velocity = input * speed;
+
+        if(input != Vector2.zero)
+        {
+            animator.SetBool("isMoving", true);
+            stopX = inputX;
+            stopY = inputY;
+        }
+        else
+        {
+            animator.SetBool("isMoving", false );
+        }
+        
+        animator.SetFloat("InputX", stopX);
+        animator.SetFloat("InputY", stopY);
+    }
+    void Attack()
+    {
+        //如果不在攻击，并按下J键，则动画Attack启动，切换至攻击状态，启动Attack携程
+        if (!PlayerAttack&& Input.GetKeyDown(KeyCode.J))
+        {
+            animator.SetTrigger("Attack");
+            PlayerAttack = true;
+            StartCoroutine(PlayAttack());
+        }
+        
+        
+    }
+    IEnumerator PlayAttack()
+    {
+        //在多少时间后，攻击框启动
+        yield return new WaitForSeconds(AttackStar);
+        if(stopX == 1)
+        {
+            pol2DRight.enabled = true;
+        }
+       
+        else
+        {
+            pol2DLeft.enabled = true;
+        }
+        //在多少时间后，攻击框消失，并重置攻击状态
+        yield return new WaitForSeconds(AttackEnd );
+        pol2DRight .enabled = false ;
+        pol2DLeft.enabled = false;
+        PlayerAttack = false;
+    }
+}
